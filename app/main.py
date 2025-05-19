@@ -4,6 +4,10 @@ from app.db import get_recent_logs
 
 app = FastAPI()
 
+@app.get("/")
+def index():
+    return {"message": "Welcome to HookGuard 👋"}
+
 @app.post("/catch")
 async def catch_webhook(request: Request, background_tasks: BackgroundTasks):
     headers = dict(request.headers)
@@ -18,6 +22,3 @@ def health_check():
 @app.get("/logs")
 def get_logs():
     return {"logs": get_recent_logs()}
-@app.get("/")
-def index():
-    return {"message": "Welcome to HookGuard 👋"}
