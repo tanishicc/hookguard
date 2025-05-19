@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: hookguard-backend
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port 10000
+    envVars:
+      - key: FORWARD_URL
+        value: https://webhook.site/your-custom-url
+      - key: MAX_RETRIES
+        value: 3
+      - key: RETRY_DELAY
+        value: 5
