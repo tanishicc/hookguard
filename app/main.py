@@ -18,3 +18,6 @@ def health_check():
 @app.get("/logs")
 def get_logs():
     return {"logs": get_recent_logs()}
+@app.get("/")
+def index():
+    return {"message": "Welcome to HookGuard"}
