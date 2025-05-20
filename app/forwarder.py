@@ -1,13 +1,13 @@
 import httpx
 import time
 from app.db import log_status
-from app.config import FORWARD_URL, MAX_RETRIES, RETRY_DELAY
+from app.config import MAX_RETRIES, RETRY_DELAY
 
-def forward_webhook(payload, headers, retries=0):
+def forward_webhook(payload, headers, forward_url, retries=0):
     try:
-        print(f"Forwarding to {FORWARD_URL} (Attempt {retries + 1})")
+        print(f"Forwarding to {forward_url} (Attempt {retries + 1})")
         safe_headers = {k: v for k, v in headers.items() if k.lower() != "content-length"}
-        response = httpx.post(FORWARD_URL, json=payload, headers=safe_headers, timeout=10)
+        response = httpx.post(forward_url, json=payload, headers=safe_headers, timeout=10)
         print(f"Response: {response.status_code}, Body: {response.text}")
 
         if 200 <= response.status_code < 300:
@@ -20,7 +20,7 @@ def forward_webhook(payload, headers, retries=0):
         print(f"⚠️ Error forwarding webhook: {e}")
         if retries < MAX_RETRIES:
             time.sleep(RETRY_DELAY * (retries + 1))
-            forward_webhook(payload, headers, retries + 1)
+            forward_webhook(payload, headers, forward_url, retries + 1)
         else:
             print("❌ Max retries reached — logging as failed.")
             log_status(payload, headers, "failed", retries)

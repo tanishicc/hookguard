@@ -11,8 +11,19 @@ def index():
 @app.post("/catch")
 async def catch_webhook(request: Request, background_tasks: BackgroundTasks):
     headers = dict(request.headers)
-    payload = await request.json()
-    background_tasks.add_task(forward_webhook, payload, headers)
+    content_type = headers.get("content-type", "")
+
+    if "application/json" in content_type:
+        data = await request.json()
+    else:
+        form = await request.form()
+        data = dict(form)
+
+    forward_url = data.get("forward_url")
+    if not forward_url:
+        return {"error": "Missing forward_url"}
+
+    background_tasks.add_task(forward_webhook, data, headers, forward_url)
     return {"status": "received"}
 
 @app.get("/health")
