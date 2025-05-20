@@ -31,5 +31,9 @@ def health_check():
     return {"status": "ok"}
 
 @app.get("/logs")
-def get_logs():
+def logs_page():
+    return {"message": "Visit /logs/json for structured data"}
+
+@app.get("/logs/json")
+def logs_json():
     return {"logs": get_recent_logs()}
